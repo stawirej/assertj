@@ -101,21 +101,25 @@ public class assertjScenarios {
 
     @Test
     public void yodaAssertions() {
+        // Given
         final DateTime dateTime1 = new DateTime(2000, 1, 1, 0, 0, 1, 0);
         final DateTime dateTime2 = new DateTime(2000, 1, 1, 0, 0, 1, 456);
-        assertThat(dateTime1).isEqualToIgnoringMillis(dateTime2);
-
         final DateTime dateTime3 = new DateTime(2000, 1, 1, 23, 59, 59, 999);
         final DateTime dateTime4 = new DateTime(2000, 1, 1, 00, 00, 00, 000);
+
+        // Then
+        assertThat(dateTime1).isEqualToIgnoringMillis(dateTime2);
         assertThat(dateTime3).isEqualToIgnoringHours(dateTime4);
     }
 
     @Test
     public void guavaMultimapAssertions() {
+        // Given
         final Multimap<String, String> actual = ArrayListMultimap.create();
         actual.putAll("Lakers", newArrayList("Kobe Bryant", "Magic Johnson", "Kareem Abdul Jabbar"));
         actual.putAll("Spurs", newArrayList("Tony Parker", "Tim Duncan", "Manu Ginobili"));
 
+        // Then
         assertThat(actual).containsKeys("Lakers", "Spurs");
         assertThat(actual).contains(entry("Lakers", "Kobe Bryant"), entry("Spurs", "Tim Duncan"));
     }
@@ -131,11 +135,11 @@ public class assertjScenarios {
 
     @Test
     public void optionalPerson() {
-        final Optional<PersonR> person = Optional.of(new PersonR("Person R"));
+        final Optional<Person> optionalPerson = Optional.of(new Person("James", 22));
 
-        if (person.isPresent()) {
-            final PersonR personR = person.get();
-            System.out.println(personR);
+        if (optionalPerson.isPresent()) {
+            final Person person = optionalPerson.get();
+            System.out.println(person);
         } else {
             System.out.println("Not present");
         }
@@ -143,31 +147,31 @@ public class assertjScenarios {
 
     @Test
     public void optionalReturnDefaultValueWhenNullPerson() {
-        final Optional<PersonR> person = Optional.empty();
+        final Optional<Person> person = Optional.empty();
 
-        final PersonR personR = person.orElse(new PersonR("DEFAULT Person R"));
+        final Person defaultPerson = person.orElse(new Person("Noname", 0));
 
-        System.out.println(personR);
+        System.out.println(person);
     }
 
     @Ignore
     @Test
     public void shouldCreateFileWithSpecificContent() throws IOException {
         // Given
-        final String filePath = "d:\\xFile.txt";
-        final String filePath2 = "d:\\xFile2.txt";
-        final PrintStream stream = new PrintStream(new FileOutputStream(filePath));
+        final String firstXFilePath = "d:\\xFile.txt";
+        final String secondXFilePath = "d:\\xFile2.txt";
+        final PrintStream stream = new PrintStream(new FileOutputStream(firstXFilePath));
 
         // When
         stream.write("The Truth Is Out There".getBytes());
         stream.close();
 
         // Then
-        final File xFile = new File(filePath);
-        final File xFile2 = new File(filePath2);
-        assertThat(xFile).exists().isFile().isAbsolute();
-        assertThat(contentOf(xFile)).startsWith("The Truth").contains("Is Out").endsWith("There");
-        assertThat(xFile).hasContentEqualTo(xFile2);
+        final File firstXFile = new File(firstXFilePath);
+        final File secondXFile = new File(secondXFilePath);
+        assertThat(firstXFile).exists().isFile().isAbsolute();
+        assertThat(contentOf(firstXFile)).startsWith("The Truth").contains("Is Out").endsWith("There");
+        assertThat(firstXFile).hasSameContentAs(secondXFile);
     }
 
     @Test
@@ -181,8 +185,6 @@ public class assertjScenarios {
             // When
             people.get(10);
             failBecauseExceptionWasNotThrown(IndexOutOfBoundsException.class);
-            // or
-            // fail("IndexOutOfBoundsException expected because people has only 2 elements");
         } catch (final IndexOutOfBoundsException indexOutOfBoundsException) {
             // Then
             assertThat(indexOutOfBoundsException).hasMessage("Index: 10, Size: 2");
@@ -190,7 +192,7 @@ public class assertjScenarios {
     }
 
     @Test
-    public void festPreconditions() {
+    public void assertJPreconditions() {
         final String text = "text";
         Preconditions.checkNotNullOrEmpty(text);
     }
