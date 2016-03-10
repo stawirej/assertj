@@ -1,5 +1,10 @@
+import static com.google.common.collect.Lists.newArrayList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 import static org.assertj.core.api.Assertions.failBecauseExceptionWasNotThrown;
+import static org.assertj.guava.api.Assertions.assertThat;
+import static org.assertj.guava.api.Assertions.entry;
+import static org.assertj.jodatime.api.Assertions.assertThat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -10,8 +15,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.util.Preconditions;
+import org.joda.time.DateTime;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 
 public class assertjScenarios {
 
@@ -39,8 +48,8 @@ public class assertjScenarios {
         final Person john = new Person(name, age);
 
         // Then
-        MyAssertions.assertThat(john).hasAge(23);
-        MyAssertions.assertThat(john).hasName("John");
+        PersonAssert.assertThat(john).hasAge(23);
+        PersonAssert.assertThat(john).hasName("John");
     }
 
     @Test
@@ -86,25 +95,8 @@ public class assertjScenarios {
         assertThat(john.getName()).isEqualToIgnoringCase("JOHN");
 
         // or
-        MyAssertions.assertThat(john).hasAge(23);
-        MyAssertions.assertThat(john).hasName("John");
-    }
-
-    @Test
-    public void reflection() throws Exception {
-        final PersonR person = constructor().withParameterTypes(String.class).in(PersonR.class).newInstance("Yoda");
-        final HiddenClass myHiddenObject = new HiddenClass();
-        field("hidden").ofType(String.class).in(myHiddenObject).set("myHidden");
-        System.out.println(person);
-
-        field("name").ofType(String.class).in(person).set("Anakin Skywalker");
-        staticField("darkSideName").ofType(String.class).in(PersonR.class).set("Darth Vader");
-        field("hiddenObject").ofType(HiddenClass.class).in(person).set(myHiddenObject);
-
-        System.out.println(person);
-
-        final Integer value = method("foo").withReturnType(int.class).in(person).invoke();
-        System.out.println(value);
+        PersonAssert.assertThat(john).hasAge(23);
+        PersonAssert.assertThat(john).hasName("John");
     }
 
     @Test
@@ -129,7 +121,7 @@ public class assertjScenarios {
     }
 
     @Test
-    public void guavaOptional() {
+    public void optional() {
         // Given
         final Optional<String> optional = Optional.of("Test");
 
@@ -138,7 +130,7 @@ public class assertjScenarios {
     }
 
     @Test
-    public void guavaOptionalPerson() {
+    public void optionalPerson() {
         final Optional<PersonR> person = Optional.of(new PersonR("Person R"));
 
         if (person.isPresent()) {
@@ -150,10 +142,10 @@ public class assertjScenarios {
     }
 
     @Test
-    public void guavaOptionalReturnDefaultValueWhenNullPerson() {
-        final Optional<PersonR> person = Optional.absent();
+    public void optionalReturnDefaultValueWhenNullPerson() {
+        final Optional<PersonR> person = Optional.empty();
 
-        final PersonR personR = person.or(new PersonR("DEFAULT Person R"));
+        final PersonR personR = person.orElse(new PersonR("DEFAULT Person R"));
 
         System.out.println(personR);
     }
